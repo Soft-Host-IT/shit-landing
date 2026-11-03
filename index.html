@@ -127,7 +127,6 @@
             transform: translateY(-2px);
         }
 
-        /* Updated to exact request: rgb(255 255 255 / 95%) */
         .glass-panel-dark {
             background: rgb(255 255 255 / 95%);
             backdrop-filter: blur(32px) saturate(180%);
@@ -186,19 +185,25 @@
     </style>
 </head>
 
-<body class="relative bg-[#f8fafc] font-sans text-slate-700 antialiased" x-data="site()">
+<!-- Body now holds all global states: open, m (desktop dropdown), sub (mobile accordion) -->
+
+<body class="relative overflow-x-hidden bg-[#f8fafc] font-sans text-slate-700 antialiased" x-data="site()" @keydown.escape.window="open = false; m = null">
+
+    <!-- Body scroll lock when mobile menu is open -->
+    <div x-effect="document.body.classList.toggle('overflow-hidden', open)"></div>
 
     <!-- ═════════ GLOBAL BACKGROUND ORBS ═════════ -->
     <div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden" aria-hidden="true">
-        <div class="absolute -left-[10%] top-[5%] h-[45rem] w-[45rem] rounded-full bg-sky-300/40 blur-[120px] animate-blob"></div>
-        <div class="absolute right-[-10%] top-[25%] h-[40rem] w-[40rem] rounded-full bg-violet-300/40 blur-[130px] animate-blob" style="animation-delay:-8s"></div>
-        <div class="absolute bottom-[5%] left-[15%] h-[50rem] w-[50rem] rounded-full bg-amber-200/50 blur-[140px] animate-blob" style="animation-delay:-16s"></div>
-        <div class="absolute bottom-[-5%] right-[10%] h-[40rem] w-[40rem] rounded-full bg-emerald-300/30 blur-[110px] animate-blob" style="animation-delay:-4s"></div>
+        <div class="absolute -left-[10%] top-[5%] h-[30rem] w-[30rem] sm:h-[45rem] sm:w-[45rem] rounded-full bg-sky-300/40 blur-[100px] sm:blur-[120px] animate-blob"></div>
+        <div class="absolute right-[-10%] top-[25%] h-[25rem] w-[25rem] sm:h-[40rem] sm:w-[40rem] rounded-full bg-violet-300/40 blur-[100px] sm:blur-[130px] animate-blob" style="animation-delay:-8s"></div>
+        <div class="absolute bottom-[5%] left-[15%] h-[35rem] w-[35rem] sm:h-[50rem] sm:w-[50rem] rounded-full bg-amber-200/50 blur-[110px] sm:blur-[140px] animate-blob" style="animation-delay:-16s"></div>
+        <div class="absolute bottom-[-5%] right-[10%] h-[25rem] w-[25rem] sm:h-[40rem] sm:w-[40rem] rounded-full bg-emerald-300/30 blur-[90px] sm:blur-[110px] animate-blob" style="animation-delay:-4s"></div>
     </div>
 
-    <!-- HEADER (Using glass-panel-dark) -->
-    <header class="sticky top-0 z-50 border-b border-white/60 glass-panel-dark" x-data="{open:false,m:null,sub:null}" @keydown.escape.window="m=null;open=false" @click.outside="m=null">
-        <div class="mx-auto flex h-[64px] max-w-7xl items-center justify-between gap-4 px-5">
+    <!-- HEADER -->
+    <!-- Removed the local x-data so it inherits from body -->
+    <header class="sticky top-0 z-50 border-b border-white/60 glass-panel-dark" @click.outside="m = null">
+        <div class="mx-auto flex h-[64px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-5">
             <a href="#" class="flex shrink-0 items-center gap-2.5">
                 <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white shadow-sm">
                     <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -252,45 +257,65 @@
                 </a>
                 <a href="#" class="hidden rounded-lg px-3 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline-flex">Log in</a>
                 <a href="#contact" class="rounded-lg bg-slate-900 px-4 py-2 text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(15,23,42,0.2)] transition hover:bg-slate-800 hover:shadow-[0_6px_20px_rgba(15,23,42,0.15)]">Book a demo</a>
-                <button @click="open=!open" :aria-expanded="open" aria-label="Toggle menu" class="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 lg:hidden">
-                    <svg x-show="!open" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+
+                <!-- Mobile Menu Toggle (Now correctly triggers global 'open' state) -->
+                <button @click="open = true" aria-label="Open menu" class="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 lg:hidden">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                         <path d="M4 7h16M4 12h16M4 17h16" />
-                    </svg>
-                    <svg x-show="open" x-cloak class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                        <path d="M6 6l12 12M18 6 6 18" />
                     </svg>
                 </button>
             </div>
         </div>
+    </header>
 
-        <!-- Mobile Menu -->
-        <div x-show="open" x-cloak x-transition.origin.top class="max-h-[80vh] overflow-y-auto border-t border-white/50 glass-panel-dark px-5 py-2 lg:hidden">
+    <!-- ═════════ MOBILE DRAWER MENU ═════════ -->
+    <!-- Overlay -->
+    <div x-show="open" x-cloak x-transition.opacity.duration.300ms class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm lg:hidden" @click="open = false" aria-hidden="true"></div>
+
+    <!-- Drawer -->
+    <div x-show="open" x-cloak x-transition:enter="transition ease-[cubic-bezier(0.16,1,0.3,1)] duration-300 transform" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="fixed inset-y-0 right-0 z-[110] w-[85%] max-w-sm glass-panel-dark flex flex-col lg:hidden shadow-2xl border-l border-white/50">
+
+        <div class="flex items-center justify-between px-5 h-[64px] border-b border-slate-200/50 shrink-0">
+            <span class="text-[17px] font-extrabold tracking-tight text-slate-900">Menu</span>
+            <button @click="open = false" class="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4">
             <template x-for="(i,n) in menu" :key="i.t">
                 <div class="border-b border-slate-200/50 last:border-0">
-                    <template x-if="!i.items"><a :href="i.href" class="block py-3 font-bold text-slate-800" x-text="i.t"></a></template>
+                    <template x-if="!i.items">
+                        <a :href="i.href" @click="open = false" class="block py-4 font-bold text-slate-800" x-text="i.t"></a>
+                    </template>
                     <template x-if="i.items">
                         <div>
-                            <button @click="sub=(sub==n?null:n)" :aria-expanded="(sub==n)" class="flex w-full items-center justify-between py-3 font-bold text-slate-800">
+                            <button @click="sub=(sub==n?null:n)" :aria-expanded="(sub==n)" class="flex w-full items-center justify-between py-4 font-bold text-slate-800">
                                 <span x-text="i.t"></span>
-                                <svg class="h-4 w-4 text-slate-500 transition" :class="sub==n&&'rotate-180'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                                <svg class="h-4 w-4 text-slate-500 transition duration-300" :class="sub==n&&'rotate-180'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
                                     <path d="m5 8 5 5 5-5" />
                                 </svg>
                             </button>
-                            <ul x-show="sub==n" x-cloak class="space-y-1 pb-3 pl-1">
+                            <ul x-show="sub==n" x-cloak x-collapse class="space-y-1 pb-4 pl-1">
                                 <template x-for="l in i.items" :key="l[0]">
-                                    <li><a :href="l[2]" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-sky-700" x-text="l[0]"></a></li>
+                                    <li><a :href="l[2]" @click="open = false" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-sky-700" x-text="l[0]"></a></li>
                                 </template>
                             </ul>
                         </div>
                     </template>
                 </div>
             </template>
-            <div class="flex gap-2 py-4">
-                <a href="https://softhostit.com/order/cart" class="flex-1 rounded-lg border border-slate-200 bg-white/60 py-2.5 text-center text-sm font-bold text-slate-700">Cart</a>
-                <a href="#" class="flex-1 rounded-lg bg-slate-900 py-2.5 text-center text-sm font-bold text-white">Log in</a>
+        </div>
+
+        <div class="p-5 border-t border-slate-200/50 bg-white/50 shrink-0">
+            <div class="flex gap-3">
+                <a href="https://softhostit.com/order/cart" class="flex-1 rounded-xl border border-slate-200 bg-white py-3 text-center text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">Cart</a>
+                <a href="#" class="flex-1 rounded-xl bg-slate-900 py-3 text-center text-sm font-bold text-white shadow-sm transition hover:bg-slate-800">Log in</a>
             </div>
         </div>
-    </header>
+    </div>
 
     <main>
         <!-- ═════════ HERO ═════════ -->
@@ -300,8 +325,8 @@
                 <div class="grain absolute inset-0"></div>
             </div>
 
-            <!-- floating sticker tags -->
-            <div class="pointer-events-none absolute inset-0 hidden overflow-hidden sm:block" aria-hidden="true">
+            <!-- floating sticker tags (desktop only to keep mobile clean) -->
+            <div class="pointer-events-none absolute inset-0 hidden overflow-hidden md:block" aria-hidden="true">
                 <template x-for="(f,i) in floaters" :key="'fl'+i">
                     <div class="absolute animate-drift" :style="`left:${f.x}%;top:${f.y}%;--dur:${f.dur}s;animation-delay:${f.d}s`">
                         <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-[10.5px] font-bold tracking-tight shadow-[0_4px_12px_-2px_rgba(15,23,42,0.08)] backdrop-blur-md" :class="[f.c, f.r]">
@@ -312,7 +337,7 @@
                 </template>
             </div>
 
-            <div class="relative mx-auto max-w-7xl px-5 pb-16 pt-14 lg:pb-20 lg:pt-20">
+            <div class="relative mx-auto max-w-7xl px-4 sm:px-5 pb-16 pt-12 sm:pt-20 lg:pb-20 lg:pt-24">
                 <!-- Centred headline block -->
                 <div class="mx-auto max-w-4xl text-center" data-reveal>
                     <a href="#work" class="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/60 backdrop-blur-md py-1 pl-1 pr-3.5 text-[12px] font-semibold text-slate-700 shadow-sm transition hover:border-white hover:bg-white/90">
@@ -324,12 +349,12 @@
                         Trusted by 300+ businesses across Bangladesh
                     </a>
 
-                    <h1 class="mt-7 text-balance text-[2.4rem] font-extrabold leading-[1.02] tracking-[-0.045em] text-slate-900 sm:text-[3.4rem] lg:text-[4rem]">
+                    <h1 class="mt-6 sm:mt-7 text-balance text-[2rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[3.4rem] lg:text-[4rem]">
                         Hosting, domains and software<br class="hidden sm:block">
                         that <span class="mark">grow</span> with you.
                     </h1>
 
-                    <p class="mx-auto mt-6 max-w-2xl text-[15px] font-medium leading-relaxed text-slate-600 sm:text-[16px]">
+                    <p class="mx-auto mt-5 sm:mt-6 max-w-2xl text-[15px] font-medium leading-relaxed text-slate-600 sm:text-[16px]">
                         One team for BDIX hosting, domains, websites and business software — built and supported in Bangladesh. We build <span class="caret font-bold text-slate-900" x-text="typed"></span>
                     </p>
 
@@ -337,8 +362,8 @@
                     <div class="mx-auto mt-8 max-w-2xl">
                         <form @submit.prevent="search()" class="flex flex-col gap-1.5 rounded-2xl glass-panel p-1.5 sm:flex-row">
                             <label class="sr-only" for="dq">Search your domain</label>
-                            <input id="dq" x-model="q" placeholder="Search your domain, e.g. mybusiness" autocomplete="off" class="min-w-0 flex-1 rounded-xl bg-transparent px-4 py-3 text-[14px] font-medium text-slate-900 placeholder:font-normal placeholder:text-slate-500 focus:outline-none">
-                            <button class="rounded-xl bg-sky-700 px-6 py-3 text-[13px] font-bold text-white shadow-sm transition hover:bg-sky-800 hover:shadow-[0_4px_14px_0_rgba(2,132,199,0.3)] active:scale-[.98]">Search</button>
+                            <input id="dq" x-model="q" placeholder="Search your domain, e.g. mybusiness" autocomplete="off" class="min-w-0 flex-1 rounded-xl bg-transparent px-4 py-3 text-[16px] sm:text-[14px] font-medium text-slate-900 placeholder:font-normal placeholder:text-slate-500 focus:outline-none">
+                            <button class="rounded-xl bg-sky-700 px-6 py-3.5 sm:py-3 text-[14px] sm:text-[13px] font-bold text-white shadow-sm transition hover:bg-sky-800 hover:shadow-[0_4px_14px_0_rgba(2,132,199,0.3)] active:scale-[.98]">Search</button>
                         </form>
 
                         <ul x-show="!domain" class="mt-3 flex flex-wrap justify-center gap-1.5 text-[12px]">
@@ -366,7 +391,7 @@
                         </div>
                     </div>
 
-                    <ul class="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12px] font-semibold text-slate-600">
+                    <ul class="mt-7 flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2 text-[12px] font-semibold text-slate-600">
                         <li class="flex items-center gap-1.5">
                             <svg class="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 12.5 9 17.5 20 6.5" />
@@ -388,10 +413,10 @@
                     </ul>
                 </div>
 
-                <!-- Console strip (Advanced Glass) -->
-                <div class="mx-auto mt-14 max-w-5xl" data-reveal>
+                <!-- Console strip -->
+                <div class="mx-auto mt-12 sm:mt-16 max-w-5xl" data-reveal>
                     <div class="overflow-hidden rounded-2xl glass-panel-dark p-2 shadow-[0_24px_60px_-28px_rgba(15,23,42,.15)]">
-                        <div class="flex items-center justify-between gap-3 px-3 pb-2 pt-1">
+                        <div class="flex items-center justify-between gap-3 px-3 pb-2 pt-1 border-b border-white/50 mb-2">
                             <div class="flex items-center gap-2">
                                 <span class="flex gap-1.5">
                                     <span class="h-2.5 w-2.5 rounded-full bg-rose-400"></span>
@@ -405,7 +430,7 @@
                             </span>
                         </div>
 
-                        <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                             <!-- uptime -->
                             <div class="rounded-xl glass-mini p-4">
                                 <p class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-emerald-800">Uptime</p>
@@ -473,11 +498,11 @@
 
         <!-- ═════════ MARQUEE ═════════ -->
         <section class="border-y border-white/50 bg-white/40 backdrop-blur-md">
-            <div class="mx-auto flex max-w-7xl items-center gap-6 px-5 py-5">
+            <div class="mx-auto flex max-w-7xl items-center gap-6 px-4 sm:px-5 py-5">
                 <span class="hidden shrink-0 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-500 sm:block">Our software</span>
                 <div class="marquee-wrap relative flex-1 overflow-hidden">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-[#f8fafc] to-transparent"></div>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-[#f8fafc] to-transparent"></div>
+                    <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-20 bg-gradient-to-r from-[#f8fafc] to-transparent"></div>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-20 bg-gradient-to-l from-[#f8fafc] to-transparent"></div>
                     <div class="flex w-max animate-marquee items-center gap-10">
                         <template x-for="n in 2" :key="'g'+n">
                             <div class="flex items-center gap-10">
@@ -492,22 +517,22 @@
         </section>
 
         <!-- ═════════ 01 SERVICES ═════════ -->
-        <section id="services" class="mx-auto max-w-7xl px-5 py-20 sm:py-28">
+        <section id="services" class="mx-auto max-w-7xl px-4 sm:px-5 py-16 sm:py-28">
             <div class="max-w-3xl" data-reveal>
                 <div class="flex items-center gap-2.5">
                     <span class="flex h-6 w-6 items-center justify-center rounded-md bg-sky-700 text-[10px] font-extrabold text-white shadow-sm">01</span>
                     <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-500">Built for your everyday</span>
                 </div>
-                <h2 class="mt-5 text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
+                <h2 class="mt-5 text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
                     Every service your business needs.<br>
                     <span class="text-sky-700">One connected team</span>.
                 </h2>
                 <p class="mt-4 max-w-xl text-[15px] font-medium leading-relaxed text-slate-600">Domains, hosting, websites and software — built, delivered and supported by one team in Bangladesh.</p>
             </div>
 
-            <div class="mt-12 grid gap-4 lg:grid-cols-3" data-reveal>
+            <div class="mt-10 sm:mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-reveal>
                 <template x-for="(s,i) in services" :key="s.t">
-                    <article class="group relative flex flex-col overflow-hidden rounded-2xl glass-panel glass-panel-hover p-6" :class="i===0?'lg:col-span-2 sm:col-span-2':''">
+                    <article class="group relative flex flex-col overflow-hidden rounded-2xl glass-panel glass-panel-hover p-5 sm:p-6" :class="i===0?'md:col-span-2 lg:col-span-2':''">
                         <div class="flex items-start justify-between">
                             <span class="flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-sm transition group-hover:scale-105" :class="s.ih">
                                 <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -547,15 +572,15 @@
         </section>
 
         <!-- ═════════ 02 PROCESS ═════════ -->
-        <section class="py-20 sm:py-28">
-            <div class="mx-auto max-w-7xl px-5">
-                <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <section class="py-16 sm:py-28">
+            <div class="mx-auto max-w-7xl px-4 sm:px-5">
+                <div class="grid gap-10 lg:gap-16 lg:grid-cols-12 items-center">
                     <div class="lg:col-span-5" data-reveal>
                         <div class="flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-700 text-[10px] font-extrabold text-white shadow-sm">02</span>
                             <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-500">A calmer way to work</span>
                         </div>
-                        <h2 class="mt-5 text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
+                        <h2 class="mt-5 text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
                             A calmer way to<br>
                             <span class="text-indigo-700">get work done</span>.
                         </h2>
@@ -574,7 +599,7 @@
                             </template>
                         </div>
 
-                        <a href="#pricing" class="mt-7 inline-flex items-center gap-2 rounded-xl bg-indigo-700 px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(67,56,202,0.25)] transition hover:bg-indigo-800 hover:shadow-[0_6px_20px_rgba(67,56,202,0.2)]">
+                        <a href="#pricing" class="mt-7 inline-flex items-center gap-2 rounded-xl bg-indigo-700 px-5 py-3 sm:py-2.5 text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(67,56,202,0.25)] transition hover:bg-indigo-800 hover:shadow-[0_6px_20px_rgba(67,56,202,0.2)]">
                             See plans
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14M13 6l6 6-6 6" />
@@ -584,18 +609,18 @@
 
                     <div class="lg:col-span-7" data-reveal>
                         <div class="overflow-hidden rounded-2xl glass-panel p-1">
-                            <div class="flex items-center justify-between border-b border-white/50 bg-white/40 px-5 py-3 rounded-t-xl">
+                            <div class="flex items-center justify-between border-b border-white/50 bg-white/40 px-4 sm:px-5 py-3 rounded-t-xl">
                                 <div class="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500">
                                     <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
                                     Soft Host / Workspace
                                 </div>
                                 <span class="rounded-full bg-indigo-100/80 px-2.5 py-0.5 text-[9.5px] font-extrabold text-indigo-800 border border-indigo-200/50">Step 1 of 3</span>
                             </div>
-                            <div class="p-6 sm:p-8 bg-white/30 rounded-b-xl">
-                                <h3 class="text-xl font-extrabold tracking-tight text-slate-900">Start a new project</h3>
+                            <div class="p-5 sm:p-8 bg-white/30 rounded-b-xl">
+                                <h3 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">Start a new project</h3>
                                 <p class="mt-1 text-[13px] font-medium text-slate-600">Tell us what you need. We'll reply within one working day.</p>
 
-                                <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                                <div class="mt-5 sm:mt-6 grid gap-3 sm:gap-4 sm:grid-cols-2">
                                     <label class="block">
                                         <span class="text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Project name</span>
                                         <input disabled value="Your project" class="mt-1.5 w-full rounded-lg glass-input px-3.5 py-2.5 text-[13px] font-semibold text-slate-800">
@@ -630,14 +655,14 @@
         </section>
 
         <!-- ═════════ 03 PRICING ═════════ -->
-        <section id="pricing" class="mx-auto max-w-7xl px-5 py-20 sm:py-28" x-data="{cycle:'m'}">
+        <section id="pricing" class="mx-auto max-w-7xl px-4 sm:px-5 py-16 sm:py-28" x-data="{cycle:'m'}">
             <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end" data-reveal>
                 <div class="max-w-xl">
                     <div class="flex items-center gap-2.5">
                         <span class="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-700 text-[10px] font-extrabold text-white shadow-sm">03</span>
                         <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-500">Hosting plans</span>
                     </div>
-                    <h2 class="mt-5 text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
+                    <h2 class="mt-5 text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
                         Plans that <span class="text-emerald-700">scale</span> with you.
                     </h2>
                     <p class="mt-4 text-[15px] font-medium leading-relaxed text-slate-600">Managed BDIX hosting with Plesk, NVMe SSD and daily backups.</p>
@@ -645,14 +670,14 @@
 
                 <div class="inline-flex flex-wrap gap-1 rounded-xl glass-panel p-1" role="tablist" aria-label="Billing cycle">
                     <template x-for="c in [['m','Monthly'],['h','6 mo · −10%'],['y','Yearly · −15%']]" :key="c[0]">
-                        <button role="tab" @click="cycle=c[0]" :aria-selected="(cycle==c[0])" :class="cycle==c[0]?'bg-slate-900 text-white shadow-sm':'text-slate-600 hover:bg-white/80 hover:text-slate-900'" class="rounded-lg px-3.5 py-1.5 text-[12px] font-bold transition" x-text="c[1]"></button>
+                        <button role="tab" @click="cycle=c[0]" :aria-selected="(cycle==c[0])" :class="cycle==c[0]?'bg-slate-900 text-white shadow-sm':'text-slate-600 hover:bg-white/80 hover:text-slate-900'" class="rounded-lg px-3.5 py-2 sm:py-1.5 text-[12px] font-bold transition" x-text="c[1]"></button>
                     </template>
                 </div>
             </div>
 
-            <div class="mt-12 grid items-start gap-4 md:grid-cols-3" data-reveal>
+            <div class="mt-10 sm:mt-12 grid grid-cols-1 md:grid-cols-3 gap-4" data-reveal>
                 <template x-for="p in plans" :key="p.name">
-                    <article class="relative rounded-2xl glass-panel glass-panel-hover p-7" :class="p.hot?'!border-emerald-500/60 shadow-[0_20px_50px_-24px_rgba(4,120,87,.25)] ring-1 ring-emerald-500/20':'hover:border-white/90'">
+                    <article class="relative rounded-2xl glass-panel glass-panel-hover p-6 sm:p-7" :class="p.hot?'!border-emerald-500/60 shadow-[0_20px_50px_-24px_rgba(4,120,87,.25)] ring-1 ring-emerald-500/20':'hover:border-white/90'">
                         <span x-show="p.hot" class="absolute -right-2 -top-3 rotate-3 rounded-md bg-emerald-600 px-3 py-1 text-[9px] font-extrabold uppercase tracking-wider text-white shadow-lg">Most chosen</span>
 
                         <h3 class="text-[14px] font-extrabold text-slate-900" x-text="p.name"></h3>
@@ -663,7 +688,7 @@
                         </p>
                         <p class="mt-1 text-[11px] font-semibold text-slate-500" x-text="cycle=='m'?'Billed monthly':cycle=='h'?'Billed every 6 months · save 10%':'Billed yearly · save 15%'"></p>
 
-                        <a href="#contact" :class="p.hot?'bg-emerald-700 text-white hover:bg-emerald-800 shadow-[0_4px_14px_0_rgba(4,120,87,0.3)]':'border border-slate-300/80 bg-white/40 text-slate-900 hover:border-slate-400 hover:bg-white/70'" class="mt-6 block rounded-xl py-2.5 text-center text-[13px] font-bold transition shadow-sm">Add to cart</a>
+                        <a href="#contact" :class="p.hot?'bg-emerald-700 text-white hover:bg-emerald-800 shadow-[0_4px_14px_0_rgba(4,120,87,0.3)]':'border border-slate-300/80 bg-white/40 text-slate-900 hover:border-slate-400 hover:bg-white/70'" class="mt-6 block rounded-xl py-3 sm:py-2.5 text-center text-[13px] font-bold transition shadow-sm">Add to cart</a>
 
                         <div class="mt-6 h-px bg-white/60"></div>
 
@@ -688,16 +713,16 @@
         </section>
 
         <!-- ═════════ STATS ═════════ -->
-        <section class="py-14">
-            <div class="mx-auto max-w-7xl px-5">
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+        <section class="py-10 sm:py-14">
+            <div class="mx-auto max-w-7xl px-4 sm:px-5">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" data-reveal>
                     <template x-for="(s,i) in stats" :key="s.l">
-                        <div class="rounded-2xl glass-panel p-6">
-                            <p class="flex items-baseline gap-1">
-                                <span class="text-4xl font-extrabold leading-none tracking-[-0.04em] text-slate-900" x-text="s.n"></span>
-                                <span class="text-lg font-extrabold text-slate-400" x-text="s.sym"></span>
+                        <div class="rounded-2xl glass-panel p-5 sm:p-6 text-center lg:text-left">
+                            <p class="flex items-baseline justify-center lg:justify-start gap-1">
+                                <span class="text-3xl sm:text-4xl font-extrabold leading-none tracking-[-0.04em] text-slate-900" x-text="s.n"></span>
+                                <span class="text-base sm:text-lg font-extrabold text-slate-400" x-text="s.sym"></span>
                             </p>
-                            <p class="mt-2 text-[11.5px] font-semibold leading-relaxed text-slate-600" x-text="s.l"></p>
+                            <p class="mt-2 text-[11px] sm:text-[11.5px] font-semibold leading-relaxed text-slate-600" x-text="s.l"></p>
                         </div>
                     </template>
                 </div>
@@ -705,21 +730,21 @@
         </section>
 
         <!-- ═════════ 04 SOFTWARE ═════════ -->
-        <section id="software" class="py-20 sm:py-28">
-            <div class="mx-auto max-w-7xl px-5">
+        <section id="software" class="py-16 sm:py-28">
+            <div class="mx-auto max-w-7xl px-4 sm:px-5">
                 <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end" data-reveal>
                     <div class="max-w-xl">
                         <div class="flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-md bg-amber-700 text-[10px] font-extrabold text-white shadow-sm">04</span>
                             <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-500">Software we've built</span>
                         </div>
-                        <h2 class="mt-5 text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
+                        <h2 class="mt-5 text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
                             Software that runs your<br>
                             shop and <span class="text-amber-700">office</span>.
                         </h2>
                         <p class="mt-4 text-[15px] font-medium leading-relaxed text-slate-600">Accounting, stock and billing systems we build, host and support ourselves.</p>
                     </div>
-                    <a href="https://softhostit.com/software" class="inline-flex w-fit items-center gap-2 rounded-xl glass-panel px-5 py-2.5 text-[13px] font-bold text-slate-800 transition hover:bg-white/80">
+                    <a href="https://softhostit.com/software" class="inline-flex w-fit items-center gap-2 rounded-xl glass-panel px-5 py-3 sm:py-2.5 text-[13px] font-bold text-slate-800 transition hover:bg-white/80">
                         Browse all software
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -727,9 +752,9 @@
                     </a>
                 </div>
 
-                <div class="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-reveal>
+                <div class="mt-10 sm:mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-reveal>
                     <template x-for="(p,i) in products" :key="p.t">
-                        <article class="group flex flex-col rounded-2xl glass-panel glass-panel-hover p-6 hover:-translate-y-1">
+                        <article class="group flex flex-col rounded-2xl glass-panel glass-panel-hover p-5 sm:p-6 hover:-translate-y-1">
                             <div class="flex items-center justify-between">
                                 <div class="flex h-10 w-10 items-center justify-center rounded-xl text-[14px] font-extrabold text-white shadow-sm transition group-hover:scale-105" :class="p.c" x-text="p.t[0]"></div>
                                 <span class="text-[11px] font-extrabold tracking-tight text-slate-400" x-text="String(i+1).padStart(2,'0')"></span>
@@ -751,20 +776,20 @@
         </section>
 
         <!-- ═════════ 05 FIND YOUR FIT ═════════ -->
-        <section class="py-20 sm:py-28">
-            <div class="mx-auto max-w-7xl px-5">
-                <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <section class="py-16 sm:py-28">
+            <div class="mx-auto max-w-7xl px-4 sm:px-5">
+                <div class="grid gap-10 lg:grid-cols-12 lg:gap-16 items-center">
                     <div class="lg:col-span-5" data-reveal>
                         <div class="flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-md bg-rose-700 text-[10px] font-extrabold text-white shadow-sm">05</span>
                             <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-500">Let's find your fit</span>
                         </div>
-                        <h2 class="mt-5 text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
+                        <h2 class="mt-5 text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
                             Let's find <span class="text-rose-700">your fit</span>.
                         </h2>
                         <p class="mt-4 text-[15px] font-medium leading-relaxed text-slate-600">Tell us about your business and what you need. We'll find the right package and pricing for you — no guesswork, no generic tiers.</p>
 
-                        <a href="#contact" class="mt-7 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(15,23,42,0.2)] transition hover:bg-slate-800 hover:shadow-[0_6px_20px_rgba(15,23,42,0.15)]">
+                        <a href="#contact" class="mt-7 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 sm:py-2.5 text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(15,23,42,0.2)] transition hover:bg-slate-800 hover:shadow-[0_6px_20px_rgba(15,23,42,0.15)]">
                             Book a demo
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14M13 6l6 6-6 6" />
@@ -775,11 +800,11 @@
                     <div class="lg:col-span-7" data-reveal>
                         <ol class="relative space-y-3">
                             <template x-for="(s,i) in steps" :key="s.t">
-                                <li class="relative flex gap-5 rounded-2xl glass-panel glass-panel-hover p-6 hover:-translate-y-0.5">
+                                <li class="relative flex gap-4 sm:gap-5 rounded-2xl glass-panel glass-panel-hover p-5 sm:p-6 hover:-translate-y-0.5">
                                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[13px] font-extrabold text-white shadow-sm" :class="s.c" x-text="String(i+1).padStart(2,'0')"></div>
                                     <div>
-                                        <h3 class="text-[15px] font-extrabold text-slate-900" x-text="s.t"></h3>
-                                        <p class="mt-1 text-[13px] font-medium leading-relaxed text-slate-600" x-text="s.d"></p>
+                                        <h3 class="text-[14px] sm:text-[15px] font-extrabold text-slate-900" x-text="s.t"></h3>
+                                        <p class="mt-1 text-[12.5px] sm:text-[13px] font-medium leading-relaxed text-slate-600" x-text="s.d"></p>
                                     </div>
                                 </li>
                             </template>
@@ -790,21 +815,21 @@
         </section>
 
         <!-- ═════════ 06 FAQ ═════════ -->
-        <section class="py-20 sm:py-28" x-data="{o:0}">
-            <div class="mx-auto max-w-3xl px-5">
+        <section class="py-16 sm:py-28" x-data="{o:0}">
+            <div class="mx-auto max-w-3xl px-4 sm:px-5">
                 <div data-reveal>
                     <div class="flex items-center gap-2.5">
                         <span class="flex h-6 w-6 items-center justify-center rounded-md bg-teal-700 text-[10px] font-extrabold text-white shadow-sm">06</span>
                         <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-500">Good to know</span>
                     </div>
-                    <h2 class="mt-5 text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
+                    <h2 class="mt-5 text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
                         Questions, <span class="text-teal-700">answered</span>.
                     </h2>
                 </div>
-                <div class="mt-10 space-y-3" data-reveal>
+                <div class="mt-8 sm:mt-10 space-y-3" data-reveal>
                     <template x-for="(f,i) in faq" :key="f[0]">
                         <div class="overflow-hidden rounded-2xl glass-panel transition duration-300" :class="o==i?'!bg-white/90 !border-teal-500/30 ring-1 ring-teal-500/20':'hover:bg-white/90'">
-                            <button @click="o=(o==i?-1:i)" :aria-expanded="(o==i)" class="flex w-full items-center justify-between gap-4 p-5 text-left text-[14px] font-extrabold text-slate-900">
+                            <button @click="o=(o==i?-1:i)" :aria-expanded="(o==i)" class="flex w-full items-center justify-between gap-4 p-4 sm:p-5 text-left text-[13.5px] sm:text-[14px] font-extrabold text-slate-900">
                                 <span x-text="f[0]"></span>
                                 <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition" :class="o==i?'bg-teal-700 text-white rotate-180':'bg-white/70 text-slate-500'">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
@@ -812,7 +837,7 @@
                                     </svg>
                                 </span>
                             </button>
-                            <p x-show="o==i" x-cloak x-transition.opacity.duration.200ms class="px-5 pb-5 text-[13.5px] font-medium leading-relaxed text-slate-700" x-text="f[1]"></p>
+                            <p x-show="o==i" x-cloak x-transition.opacity.duration.200ms class="px-4 sm:px-5 pb-4 sm:pb-5 text-[13px] sm:text-[13.5px] font-medium leading-relaxed text-slate-700" x-text="f[1]"></p>
                         </div>
                     </template>
                 </div>
@@ -821,15 +846,15 @@
         </section>
 
         <!-- ═════════ 07 CONTACT ═════════ -->
-        <section id="contact" class="py-20 sm:py-28" x-data="{sent:false}">
-            <div class="mx-auto max-w-7xl px-5">
+        <section id="contact" class="py-16 sm:py-28" x-data="{sent:false}">
+            <div class="mx-auto max-w-7xl px-4 sm:px-5">
                 <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
                     <div class="lg:col-span-5" data-reveal>
                         <div class="flex items-center gap-2.5">
                             <span class="flex h-6 w-6 items-center justify-center rounded-md bg-sky-700 text-[10px] font-extrabold text-white shadow-sm">07</span>
                             <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-500">Your next chapter</span>
                         </div>
-                        <h2 class="mt-5 text-[2.1rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
+                        <h2 class="mt-5 text-[1.75rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-[2.6rem] lg:text-[2.9rem]">
                             Book your <span class="text-sky-700">demo</span>.
                         </h2>
                         <p class="mt-4 text-[15px] font-medium leading-relaxed text-slate-600">Tell us about your business. We'll show you hosting, domains and software — with your workflow in mind.</p>
@@ -876,20 +901,20 @@
                         </div>
                     </div>
 
-                    <form @submit.prevent="sent=true;$el.reset()" class="space-y-4 lg:col-span-7 glass-panel p-6 sm:p-8 rounded-3xl" data-reveal>
+                    <form @submit.prevent="sent=true;$el.reset()" class="space-y-4 lg:col-span-7 glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl" data-reveal>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <label class="block text-[11px] font-bold text-slate-800">Name
-                                <input required name="name" placeholder="Your full name" class="mt-1.5 w-full rounded-xl glass-input px-4 py-3 text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500">
+                                <input required name="name" placeholder="Your full name" class="mt-1.5 w-full rounded-xl glass-input px-4 py-3 text-[16px] sm:text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500">
                             </label>
                             <label class="block text-[11px] font-bold text-slate-800">Phone
-                                <input required name="phone" placeholder="01XXXXXXXXX" class="mt-1.5 w-full rounded-xl glass-input px-4 py-3 text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500">
+                                <input required name="phone" placeholder="01XXXXXXXXX" class="mt-1.5 w-full rounded-xl glass-input px-4 py-3 text-[16px] sm:text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500">
                             </label>
                         </div>
                         <label class="block text-[11px] font-bold text-slate-800">Email
-                            <input required type="email" name="email" placeholder="you@company.com" class="mt-1.5 w-full rounded-xl glass-input px-4 py-3 text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500">
+                            <input required type="email" name="email" placeholder="you@company.com" class="mt-1.5 w-full rounded-xl glass-input px-4 py-3 text-[16px] sm:text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500">
                         </label>
                         <label class="block text-[11px] font-bold text-slate-800">I'm interested in
-                            <select name="topic" class="mt-1.5 w-full appearance-none rounded-xl glass-input px-4 py-3 text-[13px] font-medium text-slate-800 transition focus:border-sky-500 focus:outline-none">
+                            <select name="topic" class="mt-1.5 w-full appearance-none rounded-xl glass-input px-4 py-3 text-[16px] sm:text-[13px] font-medium text-slate-800 transition focus:border-sky-500 focus:outline-none">
                                 <option>Domain &amp; hosting</option>
                                 <option>Website design &amp; development</option>
                                 <option>Business software / ERP</option>
@@ -899,9 +924,9 @@
                             </select>
                         </label>
                         <label class="block text-[11px] font-bold text-slate-800">Message
-                            <textarea name="message" rows="4" placeholder="Tell us a little about your business and what you need." class="mt-1.5 w-full resize-none rounded-xl glass-input px-4 py-3 text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500"></textarea>
+                            <textarea name="message" rows="4" placeholder="Tell us a little about your business and what you need." class="mt-1.5 w-full resize-none rounded-xl glass-input px-4 py-3 text-[16px] sm:text-[13px] font-medium text-slate-800 transition placeholder:font-normal placeholder:text-slate-500"></textarea>
                         </label>
-                        <button class="w-full rounded-xl bg-sky-700 py-3.5 text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(2,132,199,0.3)] transition hover:bg-sky-800 hover:shadow-[0_6px_20px_rgba(2,132,199,0.2)] active:scale-[.99]">Request a demo</button>
+                        <button class="w-full rounded-xl bg-sky-700 py-3.5 text-[14px] sm:text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(2,132,199,0.3)] transition hover:bg-sky-800 hover:shadow-[0_6px_20px_rgba(2,132,199,0.2)] active:scale-[.99]">Request a demo</button>
                         <p x-show="sent" x-cloak role="status" x-transition class="flex items-start gap-2 rounded-xl bg-emerald-50/90 p-3.5 text-[12px] font-semibold text-emerald-900 ring-1 ring-emerald-200">
                             <svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 12.5 9 17.5 20 6.5" />
@@ -916,9 +941,9 @@
 
     <!-- ═════════ FOOTER ═════════ -->
     <footer class="border-t border-white/50 bg-white/40 backdrop-blur-md">
-        <div class="mx-auto max-w-7xl px-5 pb-24 pt-14 lg:pb-14">
-            <div class="grid gap-10 lg:grid-cols-6">
-                <div class="lg:col-span-2">
+        <div class="mx-auto max-w-7xl px-4 sm:px-5 pb-28 pt-12 sm:pt-14 lg:pb-14">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 sm:gap-10">
+                <div class="col-span-2 md:col-span-3 lg:col-span-2">
                     <a href="#" class="flex items-center gap-2.5">
                         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white shadow-sm">
                             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -931,7 +956,7 @@
 
                     <form @submit.prevent="$el.reset()" class="mt-6 flex max-w-sm gap-1.5">
                         <label class="sr-only" for="nl">Email for newsletter</label>
-                        <input id="nl" type="email" required placeholder="Your email address" class="min-w-0 flex-1 rounded-xl glass-input px-3.5 py-2 text-[12px] font-medium text-slate-800">
+                        <input id="nl" type="email" required placeholder="Your email address" class="min-w-0 flex-1 rounded-xl glass-input px-3.5 py-2 text-[16px] sm:text-[12px] font-medium text-slate-800">
                         <button class="rounded-xl bg-slate-900 px-4 py-2 text-[12px] font-bold text-white shadow-sm transition hover:bg-slate-700">Subscribe</button>
                     </form>
 
@@ -954,9 +979,9 @@
                 </template>
             </div>
 
-            <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/50 pt-6 sm:flex-row">
+            <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/50 pt-6 sm:flex-row text-center sm:text-left">
                 <p class="text-[11px] font-medium text-slate-500">© <span x-text="new Date().getFullYear()"></span> Soft Host IT. All rights reserved.</p>
-                <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-medium text-slate-500">
+                <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] font-medium text-slate-500">
                     <a href="https://softhostit.com/terms" class="hover:text-slate-900">Terms</a>
                     <a href="https://softhostit.com/payment" class="hover:text-slate-900">Payment methods</a>
                     <a href="https://softhostit.com/career" class="hover:text-slate-900">Career</a>
@@ -967,7 +992,7 @@
         </div>
     </footer>
 
-    <!-- ═════════ MOBILE STICKY ═════════ -->
+    <!-- ═════════ MOBILE STICKY CTA ═════════ -->
     <div class="fixed inset-x-0 bottom-0 z-40 border-t border-white/50 glass-panel-dark px-3 py-2.5 lg:hidden" style="padding-bottom:calc(.625rem + env(safe-area-inset-bottom,0px))">
         <div class="flex gap-1.5">
             <a href="tel:+8801996702370" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/60 bg-white/60 py-2.5 text-[12px] font-bold text-slate-800">
@@ -983,6 +1008,9 @@
     <script>
         function site() {
             return {
+                open: false, // Mobile drawer state
+                m: null,     // Desktop dropdown state
+                sub: null,   // Mobile accordion sub-menu state
                 q: '', domain: '', typed: '', shown: 4, o: 0,
 
                 menu: [

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Payment Methods | Soft Host IT</title>
+    <meta name="description" content="Search and register .com, .net, .org and .xyz domains in Bangladesh. Full DNS control, forwarding and domain locking, with local support.">
+    <meta name="theme-color" content="#f8fafc">
+    <link rel="icon" type="image/svg+xml" href="assets/img/soft-host-it-1.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="assets/js/tailwind-config.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.1/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="relative overflow-x-hidden bg-[#f8fafc] font-sans text-slate-700 antialiased" data-active="More" x-data="site()" @keydown.escape.window="open = false; m = null">
+
+    <!-- Body scroll lock when mobile menu is open -->
+    <div x-effect="document.body.classList.toggle('overflow-hidden', open)"></div>
+
+    <!-- ═════════ GLOBAL BACKGROUND ORBS — brand colors ═════════ -->
+    <div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden" aria-hidden="true">
+        <div class="absolute -left-[10%] top-[5%] h-[30rem] w-[30rem] sm:h-[45rem] sm:w-[45rem] rounded-full bg-brand-blue/20 blur-[100px] sm:blur-[120px] animate-blob"></div>
+        <div class="absolute right-[-10%] top-[25%] h-[25rem] w-[25rem] sm:h-[40rem] sm:w-[40rem] rounded-full bg-brand-cyan/20 blur-[100px] sm:blur-[130px] animate-blob" style="animation-delay:-8s"></div>
+        <div class="absolute bottom-[5%] left-[15%] h-[35rem] w-[35rem] sm:h-[50rem] sm:w-[50rem] rounded-full bg-brand-orange/15 blur-[110px] sm:blur-[140px] animate-blob" style="animation-delay:-16s"></div>
+        <div class="absolute bottom-[-5%] right-[10%] h-[25rem] w-[25rem] sm:h-[40rem] sm:w-[40rem] rounded-full bg-brand-blue/15 blur-[90px] sm:blur-[110px] animate-blob" style="animation-delay:-4s"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 border-b border-white/60 glass-panel-dark" @click.outside="m = null">
+        <div class="mx-auto flex h-[64px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-5">
+
+            <!-- NEW SVG LOGO -->
+            <a href="index.html" class="flex shrink-0 items-center gap-2.5">
+                <img src="assets/img/soft-host-it-2.svg" alt="" class="h-9 sm:h-10 w-auto">
+                <!-- <span class="text-[19px] sm:text-[21px] font-extrabold tracking-tight text-brand-blue">
+                    Soft <span class="text-brand-orange">Host</span> <span class="text-brand-cyan">it</span>
+                </span> -->
+            </a>
+
+            <nav class="hidden items-center gap-0.5 text-[14px] font-semibold text-slate-700 lg:flex" aria-label="Main">
+                <template x-for="(i,n) in menu" :key="i.t">
+                    <div class="relative" @mouseleave="m=null">
+                        <template x-if="!i.items">
+                            <a :href="i.href" class="block rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" :class="i.t===active && 'bg-slate-100 text-brand-blue'" x-text="i.t"></a>
+                        </template>
+                        <template x-if="i.items">
+                            <div>
+                                <button @mouseenter="m=n" @click="m=(m==n?null:n)" :aria-expanded="(m==n)" class="flex items-center gap-1 rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-slate-900" :class="m==n&&'bg-slate-100 text-slate-900'">
+                                    <span x-text="i.t"></span>
+                                    <svg class="h-3 w-3 transition duration-200" :class="m==n&&'rotate-180'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+                                        <path d="m5 8 5 5 5-5" />
+                                    </svg>
+                                </button>
+                                <div x-show="m==n" x-cloak x-transition.opacity.duration.150ms class="absolute top-full pt-3" :class="i.right?'right-0':'left-0'">
+                                    <div class="rounded-2xl glass-panel-dark p-2" :class="i.items.length>4?'grid w-[34rem] grid-cols-2 gap-1':'w-72'">
+                                        <template x-for="l in i.items" :key="l[0]">
+                                            <a :href="l[2]" :target="(l[2].startsWith('http')&&!l[2].includes('softhostit'))?'_blank':null" rel="noopener" class="group block rounded-xl p-3 transition hover:bg-slate-100">
+                                                <span class="flex items-center gap-1 font-bold text-slate-900 group-hover:text-brand-blue">
+                                                    <span x-text="l[0]"></span>
+                                                    <svg class="h-2.5 w-2.5 -translate-x-1 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                                    </svg>
+                                                </span>
+                                                <span class="mt-1 block text-[12px] leading-snug text-slate-500" x-text="l[1]"></span>
+                                            </a>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <a href="https://softhostit.com/order/cart" class="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline-flex">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.6h7.4a2 2 0 0 0 2-1.6L20 8H6M9.5 20a1 1 0 1 0 0-.01M17.5 20a1 1 0 1 0 0-.01" />
+                    </svg>
+                    Cart
+                </a>
+                <a href="https://softhostit.com/client/login" class="hidden rounded-lg px-3 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline-flex">Log in</a>
+                <a href="contact.html" class="rounded-lg bg-brand-blue px-4 py-2 text-[13px] font-bold text-white shadow-[0_4px_14px_0_rgba(31,107,168,0.2)] transition hover:bg-[#185582] hover:shadow-[0_6px_20px_rgba(31,107,168,0.15)]">Contact us</a>
+
+                <!-- Mobile Menu Toggle -->
+                <button @click="open = true" aria-label="Open menu" class="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 lg:hidden">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                        <path d="M4 7h16M4 12h16M4 17h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═════════ MOBILE DRAWER MENU ═════════ -->
+    <div x-show="open" x-cloak x-transition.opacity.duration.300ms class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm lg:hidden" @click="open = false" aria-hidden="true"></div>
+
+    <div x-show="open" x-cloak x-transition:enter="transition ease-[cubic-bezier(0.16,1,0.3,1)] duration-300 transform" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="fixed inset-y-0 right-0 z-[110] w-[85%] max-w-sm glass-panel-dark flex flex-col lg:hidden shadow-2xl border-l border-white/50">
+
+        <div class="flex items-center justify-between px-5 h-[64px] border-b border-slate-200/50 shrink-0">
+            <a href="index.html" class="flex shrink-0 items-center gap-2">
+                <img src="assets/img/soft-host-it-2.svg" alt="" class="h-9 sm:h-10 w-auto">
+            </a>
+            <button @click="open = false" class="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-5 py-4">
+            <template x-for="(i,n) in menu" :key="i.t">
+                <div class="border-b border-slate-200/50 last:border-0">
+                    <template x-if="!i.items">
+                        <a :href="i.href" @click="open = false" class="block py-4 font-bold text-slate-800" :class="i.t===active && 'text-brand-blue'" x-text="i.t"></a>
+                    </template>
+                    <template x-if="i.items">
+                        <div>
+                            <button @click="sub=(sub==n?null:n)" :aria-expanded="(sub==n)" class="flex w-full items-center justify-between py-4 font-bold text-slate-800">
+                                <span x-text="i.t"></span>
+                                <svg class="h-4 w-4 text-slate-500 transition duration-300" :class="sub==n&&'rotate-180'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                                    <path d="m5 8 5 5 5-5" />
+                                </svg>
+                            </button>
+                            <ul x-show="sub==n" x-cloak x-collapse class="space-y-1 pb-4 pl-1">
+                                <template x-for="l in i.items" :key="l[0]">
+                                    <li><a :href="l[2]" @click="open = false" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-brand-blue" x-text="l[0]"></a></li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <div class="p-5 border-t border-slate-200/50 bg-white/50 shrink-0">
+            <div class="flex gap-3">
+                <a href="https://softhostit.com/order/cart" class="flex-1 rounded-xl border border-slate-200 bg-white py-3 text-center text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">Cart</a>
+                <a href="https://softhostit.com/client/login" class="flex-1 rounded-xl bg-brand-blue py-3 text-center text-sm font-bold text-white shadow-sm transition hover:bg-[#185582]">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    
+    <main>
+        <section class="relative overflow-hidden">
+            <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true"><div class="absolute inset-0 dot-grid opacity-60"></div><div class="grain absolute inset-0"></div></div>
+            <div class="relative mx-auto max-w-7xl px-4 sm:px-5 pb-10 pt-12 sm:pt-20 sm:pb-14">
+                <div class="mx-auto max-w-3xl text-center" data-reveal>
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-orange">Payment methods</p>
+                    <h1 class="mt-4 text-balance text-[2rem] font-extrabold leading-[1.08] tracking-[-0.035em] text-slate-900 sm:text-[3rem]">Pay the way you already do</h1>
+                    <p class="mx-auto mt-4 max-w-2xl text-[15px] font-medium leading-relaxed text-slate-600 sm:text-[16px]">Pay online with cards and mobile wallets, send a bank transfer, or use bKash and Nagad. All of our payment details are below.</p>
+                    
+                </div>
+            </div>
+        </section>
+        <section  class="py-6 sm:py-10"><div class="mx-auto max-w-7xl px-4 sm:px-5"><div data-reveal class="rounded-2xl glass-panel p-6 sm:p-8">
+<div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center"><div><p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-cyan">Pay online</p><h2 class="mt-1 text-[1.4rem] font-extrabold tracking-tight text-slate-900">Cards, mobile wallets and internet banking</h2><p class="mt-2 flex items-center gap-2 text-[13.5px] font-medium text-slate-600">Secure checkout, verified by <img src="https://softhostit.com/frontend/images/payment_method/ssl.svg" alt="SSLCOMMERZ" class="h-5 w-auto"></p></div><a target="_blank" rel="noopener" href="https://invoice.sslcommerz.com/invoice-form?&refer=5F61F54CEEFDD" class="inline-flex shrink-0 items-center justify-center rounded-xl px-5 py-2.5 text-[13px] font-bold shadow-sm transition bg-brand-blue text-white hover:bg-[#185582]">Click here to pay</a></div>
+<div class="mt-6 grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10"><img src="assets/pay/pay-01.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-02.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-03.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-04.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-05.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-06.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-07.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-08.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-09.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-10.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-11.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-12.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-13.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-14.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-15.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-16.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-17.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-18.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-19.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-21.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-22.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-23.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-24.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-25.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-26.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-27.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-28.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-29.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-30.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-31.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-32.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-33.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-34.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-35.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-36.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-37.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-38.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"><img src="assets/pay/pay-39.png" alt="" loading="lazy" class="aspect-square w-full rounded-xl object-contain"></div></div></div></section>
+        <section  class="py-8 sm:py-12"><div class="mx-auto max-w-7xl px-4 sm:px-5"><div class="mx-auto max-w-2xl text-center" data-reveal><p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-orange">Mobile banking</p><h2 class="mt-3 text-balance text-[1.6rem] font-extrabold leading-tight tracking-[-0.03em] text-slate-900 sm:text-[2.2rem]">bKash, Nagad and Rocket</h2></div><div class="mt-5 flex items-center justify-center gap-3" data-reveal><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/payment_method/bkash.svg" onerror="this.onerror=null;this.src='assets/pay/pay-09.png'" alt="bKash" loading="lazy" class="max-h-full max-w-full object-contain"></span><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/payment_method/nogod.svg" onerror="this.onerror=null;this.src='assets/pay/pay-10.png'" alt="Nagad" loading="lazy" class="max-h-full max-w-full object-contain"></span><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/payment_method/rocket.svg" onerror="this.onerror=null;this.src='assets/pay/pay-11.png'" alt="Rocket" loading="lazy" class="max-h-full max-w-full object-contain"></span></div><div class="mx-auto mt-8 grid max-w-4xl gap-4 md:grid-cols-3"><article data-reveal class="rounded-2xl glass-panel p-6"><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/payment_method/bkash.svg" onerror="this.onerror=null;this.src='assets/pay/pay-09.png'" alt="bKash" loading="lazy" class="max-h-full max-w-full object-contain"></span><h3 class="mt-4 text-[1rem] font-extrabold text-slate-900">bKash</h3><p class="text-[11px] font-extrabold uppercase tracking-wider text-brand-orange">Merchant payment</p><p class="mt-2 flex items-center gap-2 text-[1.15rem] font-extrabold tracking-tight text-slate-900">01787247989<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('01787247989').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></p><a href="https://shop.bkash.com/soft-host-itrm54568/paymentlink/default-payment" target="_blank" rel="noopener" class="mt-4 inline-flex rounded-lg bg-brand-blue px-3.5 py-2 text-[12px] font-bold text-white transition hover:bg-[#185582]">Pay online</a></article><article data-reveal class="rounded-2xl glass-panel p-6"><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/payment_method/bkash.svg" onerror="this.onerror=null;this.src='assets/pay/pay-09.png'" alt="bKash" loading="lazy" class="max-h-full max-w-full object-contain"></span><h3 class="mt-4 text-[1rem] font-extrabold text-slate-900">bKash</h3><p class="text-[11px] font-extrabold uppercase tracking-wider text-brand-orange">Personal</p><p class="mt-2 flex items-center gap-2 text-[1.15rem] font-extrabold tracking-tight text-slate-900">01747603398<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('01747603398').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></p><a href="https://shop.bkash.com/soft-host-itrm54568/paymentlink/default-payment" target="_blank" rel="noopener" class="mt-4 inline-flex rounded-lg bg-brand-blue px-3.5 py-2 text-[12px] font-bold text-white transition hover:bg-[#185582]">Pay online</a></article><article data-reveal class="rounded-2xl glass-panel p-6"><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/payment_method/nogod.svg" onerror="this.onerror=null;this.src='assets/pay/pay-10.png'" alt="Nagad" loading="lazy" class="max-h-full max-w-full object-contain"></span><h3 class="mt-4 text-[1rem] font-extrabold text-slate-900">Nagad</h3><p class="text-[11px] font-extrabold uppercase tracking-wider text-brand-orange">Personal</p><p class="mt-2 flex items-center gap-2 text-[1.15rem] font-extrabold tracking-tight text-slate-900">01747603398<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('01747603398').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></p></article></div></div></section>
+        <section  class="py-8 sm:py-12"><div class="mx-auto max-w-7xl px-4 sm:px-5"><div class="mx-auto max-w-2xl text-center" data-reveal><p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-cyan">Bank transfer</p><h2 class="mt-3 text-balance text-[1.6rem] font-extrabold leading-tight tracking-[-0.03em] text-slate-900 sm:text-[2.2rem]">Pay from your bank</h2></div><div class="mt-8 grid gap-4 md:grid-cols-3"><article data-reveal class="rounded-2xl glass-panel p-6"><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/ebl.png" onerror="this.style.display='none'" alt="Eastern Bank Ltd" loading="lazy" class="max-h-full max-w-full object-contain"></span><h3 class="mt-4 text-[1rem] font-extrabold text-brand-blue">Eastern Bank Ltd</h3><dl class="mt-4 space-y-3 text-[13px]"><div class="flex justify-between gap-3"><dt class="font-semibold text-slate-500">A/C name</dt><dd class="font-bold text-slate-900">Soft Host IT</dd></div><div class="flex items-center justify-between gap-3"><dt class="font-semibold text-slate-500">A/C no.</dt><dd class="flex items-center gap-2 font-bold text-slate-900">200 107 019 8601<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('2001070198601').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></dd></div><div class="flex items-center justify-between gap-3"><dt class="font-semibold text-slate-500">Routing no.</dt><dd class="flex items-center gap-2 font-bold text-slate-900">095471549<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('095471549').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></dd></div></dl></article><article data-reveal class="rounded-2xl glass-panel p-6"><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/dutch-bangla-bank-softhostit.jpg" onerror="this.style.display='none'" alt="Dutch Bangla Bank" loading="lazy" class="max-h-full max-w-full object-contain"></span><h3 class="mt-4 text-[1rem] font-extrabold text-brand-blue">Dutch Bangla Bank</h3><dl class="mt-4 space-y-3 text-[13px]"><div class="flex justify-between gap-3"><dt class="font-semibold text-slate-500">A/C name</dt><dd class="font-bold text-slate-900">Soft Host IT</dd></div><div class="flex items-center justify-between gap-3"><dt class="font-semibold text-slate-500">A/C no.</dt><dd class="flex items-center gap-2 font-bold text-slate-900">120 110 003 1988<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('1201100031988').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></dd></div><div class="flex items-center justify-between gap-3"><dt class="font-semibold text-slate-500">Routing no.</dt><dd class="flex items-center gap-2 font-bold text-slate-900">090471544<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('090471544').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></dd></div></dl></article><article data-reveal class="rounded-2xl glass-panel p-6"><span class="flex h-14 w-24 items-center justify-center rounded-xl bg-white p-2 shadow-sm"><img src="https://softhostit.com/frontend/images/dutch-bangla-bank-softhostit.jpg" onerror="this.style.display='none'" alt="Dutch Bangla Bank" loading="lazy" class="max-h-full max-w-full object-contain"></span><h3 class="mt-4 text-[1rem] font-extrabold text-brand-blue">Dutch Bangla Bank</h3><dl class="mt-4 space-y-3 text-[13px]"><div class="flex justify-between gap-3"><dt class="font-semibold text-slate-500">A/C name</dt><dd class="font-bold text-slate-900">Soft Host IT</dd></div><div class="flex items-center justify-between gap-3"><dt class="font-semibold text-slate-500">A/C no.</dt><dd class="flex items-center gap-2 font-bold text-slate-900">157 110 032 4021<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('1571100324021').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></dd></div><div class="flex items-center justify-between gap-3"><dt class="font-semibold text-slate-500">Routing no.</dt><dd class="flex items-center gap-2 font-bold text-slate-900">090881905<button type="button" x-data="{c:false}" @click="navigator.clipboard.writeText('090881905').then(()=>{c=true;setTimeout(()=>c=false,1600)})" class="rounded-lg border border-white/70 bg-white/70 px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-white"><span x-text="c ? 'Copied' : 'Copy'">Copy</span></button></dd></div></dl></article></div><p class="mt-6 text-center text-[12.5px] font-medium text-slate-500">Paid by bank or mobile banking? Send us your order details so we can confirm it quickly.</p></div></section>
+        <section  class="py-10 sm:py-16"><div class="mx-auto max-w-7xl px-4 sm:px-5"><div data-reveal class="rounded-2xl glass-panel-dark p-8 text-center sm:p-12"><h2 class="text-[1.5rem] font-extrabold tracking-tight text-slate-900 sm:text-[2rem]">Need help with a payment?</h2><p class="mx-auto mt-3 max-w-xl text-[14px] font-medium text-slate-600">Contact us and we will sort it out.</p><div class="mt-6 flex flex-wrap justify-center gap-2"><a href="contact.html" class="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-[13px] font-bold shadow-sm transition bg-brand-blue text-white hover:bg-[#185582]">Contact us</a><a href="tel:+8801996702370" class="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-[13px] font-bold shadow-sm transition border border-white/70 bg-white/70 text-slate-800 hover:bg-white">Call 01996702370</a></div></div></div></section>
+    </main>
+
+    <footer class="border-t border-white/50 bg-white/40 backdrop-blur-md">
+        <div class="mx-auto max-w-7xl px-4 sm:px-5 pb-28 pt-12 sm:pt-14 lg:pb-14">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 sm:gap-10">
+                <div class="col-span-2 md:col-span-3 lg:col-span-2">
+                    <a href="index.html" class="flex items-center gap-2.5">
+                        <img src="assets/img/soft-host-it-2.svg" alt="" class="h-10 sm:h-10 w-auto">
+                    </a>
+                    <p class="mt-4 max-w-xs text-[12px] font-medium leading-relaxed text-slate-600">Bring out the best. Member of BASIS. Building domains, hosting and business software for Bangladesh since 2014.</p>
+
+                    <form @submit.prevent="$el.reset()" class="mt-6 flex max-w-sm gap-1.5">
+                        <label class="sr-only" for="nl">Email for newsletter</label>
+                        <input id="nl" type="email" required placeholder="Your email address" class="min-w-0 flex-1 rounded-xl glass-input px-3.5 py-2 text-[16px] sm:text-[12px] font-medium text-slate-800">
+                        <button class="rounded-xl bg-brand-blue px-4 py-2 text-[12px] font-bold text-white shadow-sm transition hover:bg-[#185582]">Subscribe</button>
+                    </form>
+
+                    <div class="mt-5 flex gap-2">
+                        <template x-for="s in social" :key="s[0]">
+                            <a :href="s[1]" target="_blank" rel="noopener" :aria-label="s[0]" class="flex h-9 w-9 items-center justify-center rounded-xl glass-panel text-[10px] font-extrabold text-slate-500 transition hover:bg-white/80 hover:text-brand-blue" x-text="s[0]"></a>
+                        </template>
+                    </div>
+                </div>
+
+                <template x-for="c in foot" :key="c[0]">
+                    <div>
+                        <h3 class="text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-500" x-text="c[0]"></h3>
+                        <ul class="mt-4 space-y-2.5 text-[12.5px]">
+                            <template x-for="l in c[1]" :key="l">
+                                <li><a :href="fl(l)" class="font-medium text-slate-600 transition hover:text-brand-blue" x-text="l"></a></li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
+            </div>
+
+            <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/50 pt-6 sm:flex-row text-center sm:text-left">
+                <p class="text-[11px] font-medium text-slate-500">© <span x-text="new Date().getFullYear()"></span> Soft Host IT. All rights reserved.</p>
+                <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] font-medium text-slate-500">
+                    <a href="terms.html" class="hover:text-brand-blue">Terms</a>
+                    <a href="payment.html" class="hover:text-brand-blue">Payment methods</a>
+                    <a href="career.html" class="hover:text-brand-blue">Career</a>
+                    <span class="hidden sm:inline">·</span>
+                    <span class="text-slate-400">Made in Bangladesh 🇧🇩</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MOBILE STICKY CTA -->
+    <div class="fixed inset-x-0 bottom-0 z-40 border-t border-white/50 glass-panel-dark px-3 py-2.5 lg:hidden" style="padding-bottom:calc(.625rem + env(safe-area-inset-bottom,0px))">
+        <div class="flex gap-1.5">
+            <a href="tel:+8801996702370" class="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/60 bg-white/60 py-2.5 text-[12px] font-bold text-slate-800">Call us</a>
+            <a href="contact.html" class="flex flex-[1.4] items-center justify-center rounded-xl bg-brand-blue py-2.5 text-[12px] font-bold text-white shadow-sm">Get a quote</a>
+        </div>
+    </div>
+
+    <script src="assets/js/site.js"></script>
+</body>
+
+</html>
